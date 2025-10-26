@@ -1,0 +1,10 @@
+# Test Document for DocuMind AI
+
+This is a test document to verify the document upload functionality.
+
+## Key Features
+- Document parsing
+- Text chunking
+- File storage
+
+The system should be able to extract this text and split it into manageable chunks for processing.

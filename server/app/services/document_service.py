@@ -12,6 +12,8 @@ from fastapi import UploadFile, HTTPException, status
 from app.models.document import Document
 from app.config import settings
 from app.utils.file_parser import FileParser, chunk_text
+from app.utils.embeddings import generate_embeddings
+from app.services.qdrant_service import QdrantService
 
 
 class DocumentService:
@@ -135,7 +137,7 @@ class DocumentService:
         # Save file
         file_path, file_size = await DocumentService.save_file(file, user_id)
         
-        # Parse and chunk (to validate file can be processed)
+        # Parse and chunk
         chunks = DocumentService.parse_and_chunk_document(file_path)
         
         # Create document record
@@ -150,6 +152,26 @@ class DocumentService:
         db.add(document)
         db.commit()
         db.refresh(document)
+        
+        # Generate embeddings and store in Qdrant
+        try:
+            embeddings = generate_embeddings(chunks)
+            collection_name = QdrantService.create_user_collection(user_id)
+            QdrantService.store_document_embeddings(
+                user_id=user_id,
+                document_id=document.id,
+                chunks=chunks,
+                embeddings=embeddings,
+                filename=file.filename
+            )
+            
+            # Update document with collection ID
+            document.vector_collection_id = collection_name
+            db.commit()
+            db.refresh(document)
+        except Exception as e:
+            # If embedding fails, still return document but log error
+            print(f"Error generating embeddings: {e}")
         
         return document
     
@@ -195,6 +217,12 @@ class DocumentService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Document not found"
             )
+        
+        # Delete embeddings from Qdrant
+        try:
+            QdrantService.delete_document_embeddings(user_id, document.id)
+        except Exception as e:
+            print(f"Error deleting embeddings: {e}")
         
         # Delete file from disk
         try:
