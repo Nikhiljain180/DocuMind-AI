@@ -73,18 +73,20 @@ server/
 
 ---
 
-## ✅ Checkpoint 3: Authentication System
+## ✅ Checkpoint 3: Authentication System ✅
 
 **When to commit**: After implementing complete authentication with JWT, signup, signin, logout.
 
 ### Checklist:
-- [ ] Password hashing with bcrypt (`app/utils/security.py`)
-- [ ] JWT token generation and validation
-- [ ] Authentication service (`app/services/auth_service.py`)
-- [ ] Auth routes (`POST /api/auth/signup`, `/signin`, `/logout`)
-- [ ] Auth middleware/dependency for protected routes
-- [ ] User creation, validation, and database storage
-- [ ] Test auth endpoints work via API docs (http://localhost:8000/docs)
+- [x] Password hashing with bcrypt (`app/utils/security.py`)
+- [x] JWT token generation and validation
+- [x] Authentication service (`app/services/auth_service.py`)
+- [x] Auth routes (`POST /api/auth/signup`, `/signin`, `/logout`)
+- [x] Auth middleware/dependency for protected routes
+- [x] User creation, validation, and database storage
+- [x] Test auth endpoints work via API docs (http://localhost:8000/docs)
+
+**Status**: ✅ **COMPLETE** - Committed with tag `checkpoint-3`
 
 **Files to include:**
 ```
@@ -405,7 +407,7 @@ client/src/
 
 ## 🎯 Current Status
 
-**Next Checkpoint**: [ ] 1
+**Next Checkpoint**: [ ] 3
 **Last Updated**: [Date]
 **Current Blocker**: [None]
 
