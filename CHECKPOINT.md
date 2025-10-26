@@ -143,18 +143,25 @@ server/app/
 
 ---
 
-## ✅ Checkpoint 5: Vector Embeddings & Qdrant Integration
+## ✅ Checkpoint 5: Vector Embeddings & Qdrant Integration ✅
 
 **When to commit**: After implementing OpenAI embeddings, storing in Qdrant, and retrieval.
 
 ### Checklist:
-- [ ] OpenAI embeddings integration (`app/utils/embeddings.py`)
-- [ ] Qdrant collection creation
-- [ ] Vector storage in Qdrant
-- [ ] Vector similarity search
-- [ ] Document chunk embeddings storage
-- [ ] Update document upload to generate and store embeddings
-- [ ] Metadata filtering by user
+- [x] OpenAI embeddings integration (`app/utils/embeddings.py`)
+- [x] Qdrant collection creation
+- [x] Vector storage in Qdrant
+- [x] Vector similarity search
+- [x] Document chunk embeddings storage
+- [x] Update document upload to generate and store embeddings
+- [x] Metadata filtering by user
+
+**Status**: ✅ **COMPLETE** - Committed with tag `checkpoint-5`
+
+**⚠️ Important**: Add your OpenAI API key to `server/.env`:
+```
+OPENAI_API_KEY=sk-your-actual-api-key-here
+```
 
 **Files to include:**
 ```
