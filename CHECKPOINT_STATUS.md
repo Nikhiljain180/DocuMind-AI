@@ -1,103 +1,135 @@
 # DocuMind AI - Checkpoint Status
 
 ## ✅ Checkpoint 1: COMPLETE ✅
-**Date Completed**: [Committed to Git]
-**Status**: Committed
+**Status**: Committed with tag `checkpoint-1`
 
 ## ✅ Checkpoint 2: COMPLETE ✅
-**Date Completed**: [Pending commit]
-**Status**: Ready for commit
+**Status**: Committed with tag `checkpoint-2`
+
+## ✅ Checkpoint 3: COMPLETE ✅
+**Date Completed**: [Just committed]
+**Status**: Committed with tag `checkpoint-3`
 
 ### What was built:
 
-#### Database Setup
-- ✅ Database connection setup (PostgreSQL with SQLAlchemy)
-- ✅ User model (id, email, username, password, timestamps)
-- ✅ Document model (id, user_id, filename, file_path, size, mime_type, vector_collection_id)
-- ✅ Alembic migrations configured
-- ✅ Database session dependency
+#### Security & Authentication
+- ✅ Password hashing with bcrypt
+- ✅ JWT token generation and validation
+- ✅ Token expiration management
+- ✅ Security utilities module
 
-#### Qdrant Setup
-- ✅ Qdrant client configuration
-- ✅ Collection creation utility
-- ✅ Collection naming convention (user_{user_id}_documents)
+#### Authentication Service
+- ✅ User signup with validation
+- ✅ Email/username uniqueness checks
+- ✅ User signin with password verification
+- ✅ JWT token creation on successful auth
+- ✅ Current user extraction from token
 
-#### Pydantic Schemas
-- ✅ Auth schemas (UserSignup, UserLogin, Token, UserResponse)
-- ✅ Document schemas (DocumentUpload, DocumentResponse)
-- ✅ Chat schemas (ChatRequest, ChatResponse, ChatSource)
+#### API Routes
+- ✅ POST `/api/auth/signup` - Register new user
+- ✅ POST `/api/auth/signin` - Login user
+- ✅ POST `/api/auth/logout` - Logout (client discards token)
+- ✅ GET `/api/auth/me` - Get current user info (protected)
 
-#### API Structure
-- ✅ Routes directory structure created
-- ✅ Main app configured with CORS
-- ✅ Health check endpoints
+#### Protected Routes
+- ✅ HTTPBearer authentication dependency
+- ✅ `get_current_user_id` dependency for route protection
+- ✅ Token extraction and validation
 
 ### Files created:
 
 ```
-server/
-├── app/
-│   ├── database.py (PostgreSQL connection)
-│   ├── models/
-│   │   ├── user.py
-│   │   ├── document.py
-│   │   └── __init__.py
-│   ├── schemas/
-│   │   ├── auth.py
-│   │   ├── document.py
-│   │   ├── chat.py
-│   │   └── __init__.py
-│   ├── utils/
-│   │   └── qdrant_client.py
-│   └── api/routes/
-│       └── __init__.py
-├── alembic/
-│   ├── env.py
-│   ├── script.py.mako
-│   └── versions/
-└── alembic.ini
+server/app/
+├── utils/
+│   └── security.py (bcrypt + JWT utilities)
+├── services/
+│   └── auth_service.py (signup, signin logic)
+├── api/
+│   ├── dependencies.py (auth dependencies)
+│   └── routes/
+│       └── auth.py (auth endpoints)
+└── main.py (updated with auth routes)
 ```
 
-### Next Steps:
+### How to Test:
 
-1. **Test Database Connection**:
+1. **Start Docker services**:
+   ```bash
+   docker-compose up postgres qdrant redis
+   ```
+
+2. **Run migrations**:
    ```bash
    cd server
-   # Make sure postgres is running: docker-compose up postgres
-   # Run migration: alembic upgrade head
+   uv venv && source .venv/bin/activate
+   uv pip install -r requirements.txt
+   alembic revision --autogenerate -m "Initial migration"
+   alembic upgrade head
    ```
 
-2. **Test Server**:
+3. **Start server**:
    ```bash
-   # Start infrastructure: docker-compose up postgres qdrant redis
-   # In another terminal: uvicorn app.main:app --reload
-   # Visit: http://localhost:8000/docs
+   uvicorn app.main:app --reload
    ```
 
-3. **Commit Checkpoint 2**:
-   ```bash
-   git add .
-   git commit -m "Checkpoint 2: Backend Foundation & Database Setup"
-   git tag checkpoint-2
-   ```
+4. **Test in browser**:
+   - Visit: http://localhost:8000/docs
+   - Try POST `/api/auth/signup` with:
+     ```json
+     {
+       "email": "test@example.com",
+       "username": "testuser",
+       "password": "password123"
+     }
+     ```
+   - Copy the `access_token` from response
+   - Click "Authorize" button, paste token
+   - Try GET `/api/auth/me` (should return user info)
+
+### API Endpoints:
+
+#### Public Endpoints (No Auth Required):
+- `POST /api/auth/signup` - Create new user account
+- `POST /api/auth/signin` - Login and get token
+- `POST /api/auth/logout` - Logout instruction
+
+#### Protected Endpoints (Token Required):
+- `GET /api/auth/me` - Get current user information
 
 ---
 
-## ⏳ Checkpoint 3: Next (Authentication System)
+## ⏳ Checkpoint 4: Next (Document Upload & Processing)
 
 ### What needs to be built:
-- Password hashing with bcrypt
-- JWT token generation and validation
-- Authentication service
-- Auth routes (signup, signin, logout)
-- Auth middleware for protected routes
+- File upload endpoint with validation
+- File storage on disk
+- File parsing (PDF, DOCX, TXT, MD, CSV)
+- Text chunking utilities
+- Document service
+- Document routes
 
 See [CHECKPOINT.md](./CHECKPOINT.md) for full details.
 
 ---
 
-## 📝 Notes:
-- Database models are ready for migration
-- Qdrant client ready for vector operations
-- All schemas ready for API implementation
-- Server should start and connect to databases
+## 📝 Progress Summary:
+
+| Checkpoint | Status | Description |
+|------------|--------|-------------|
+| 1 | ✅ Complete | Project foundation & infrastructure |
+| 2 | ✅ Complete | Backend foundation & database setup |
+| 3 | ✅ Complete | Authentication system |
+| 4 | ⏳ Next | Document upload & processing |
+| 5 | Pending | Vector embeddings & Qdrant |
+| 6 | Pending | RAG chat system |
+| 7 | Pending | Frontend foundation |
+| 8 | Pending | Frontend auth UI |
+| 9 | Pending | Document upload UI |
+| 10 | Pending | Chat interface UI |
+| 11 | Pending | Integration & polish |
+| 12 | Pending | Testing & bug fixes |
+| 13 | Pending | Final polish & docs |
+
+---
+
+**Current State**: Backend authentication is fully functional and ready to protect future endpoints!
