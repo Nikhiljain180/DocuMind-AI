@@ -106,23 +106,25 @@ server/app/
 
 ---
 
-## ✅ Checkpoint 4: Document Upload & Processing
+## ✅ Checkpoint 4: Document Upload & Processing ✅
 
 **When to commit**: After implementing file upload, parsing (PDF, DOCX, TXT), and chunking.
 
 ### Checklist:
-- [ ] File upload endpoint (`POST /api/upload`)
-- [ ] File validation (type, size)
-- [ ] File storage on disk
-- [ ] File parsing utilities (`app/utils/file_parser.py`)
+- [x] File upload endpoint (`POST /api/upload`)
+- [x] File validation (type, size)
+- [x] File storage on disk
+- [x] File parsing utilities (`app/utils/file_parser.py`)
   - PDF parsing
   - DOCX parsing
   - TXT parsing
   - MD parsing
-- [ ] Text chunking logic
-- [ ] Document service (`app/services/document_service.py`)
-- [ ] Document routes and schemas
-- [ ] Error handling for file operations
+- [x] Text chunking logic
+- [x] Document service (`app/services/document_service.py`)
+- [x] Document routes and schemas
+- [x] Error handling for file operations
+
+**Status**: ✅ **COMPLETE** - Committed with tag `checkpoint-4`
 
 **Files to include:**
 ```
