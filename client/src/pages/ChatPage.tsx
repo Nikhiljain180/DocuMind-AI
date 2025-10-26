@@ -21,6 +21,7 @@ export const ChatPage: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Load messages from localStorage on mount
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
@@ -35,16 +36,48 @@ export const ChatPage: React.FC = () => {
 
     fetchDocuments();
 
-    // Add welcome message
-    setMessages([
-      {
-        id: uuidv4(),
-        role: 'assistant',
-        content: 'Hello! I\'m your AI assistant. Upload some documents and ask me questions about them. I\'ll provide answers based on your document content.',
-        timestamp: new Date(),
-      },
-    ]);
+    // Load chat history from localStorage
+    const savedMessages = localStorage.getItem('chatHistory');
+    if (savedMessages) {
+      try {
+        const parsed = JSON.parse(savedMessages);
+        // Convert timestamp strings back to Date objects
+        const messagesWithDates = parsed.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp),
+        }));
+        setMessages(messagesWithDates);
+      } catch (error) {
+        console.error('Failed to load chat history:', error);
+        // If loading fails, show welcome message
+        setMessages([
+          {
+            id: uuidv4(),
+            role: 'assistant',
+            content: 'Hello! I\'m your AI assistant. Upload some documents and ask me questions about them. I\'ll provide answers based on your document content.',
+            timestamp: new Date(),
+          },
+        ]);
+      }
+    } else {
+      // Add welcome message if no history
+      setMessages([
+        {
+          id: uuidv4(),
+          role: 'assistant',
+          content: 'Hello! I\'m your AI assistant. Upload some documents and ask me questions about them. I\'ll provide answers based on your document content.',
+          timestamp: new Date(),
+        },
+      ]);
+    }
   }, []);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('chatHistory', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const handleSendMessage = async (content: string) => {
     // Add user message
@@ -90,11 +123,39 @@ export const ChatPage: React.FC = () => {
 
   const indexedDocsCount = documents.filter(doc => doc.vector_collection_id).length;
 
+  const clearChatHistory = () => {
+    if (window.confirm('Are you sure you want to clear all chat history?')) {
+      localStorage.removeItem('chatHistory');
+      setMessages([
+        {
+          id: uuidv4(),
+          role: 'assistant',
+          content: 'Hello! I\'m your AI assistant. Upload some documents and ask me questions about them. I\'ll provide answers based on your document content.',
+          timestamp: new Date(),
+        },
+      ]);
+      toast.success('Chat history cleared');
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-3xl font-bold text-gray-900">Chat with Your Documents</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900">Chat with Your Documents</h1>
+          {messages.length > 1 && (
+            <button
+              onClick={clearChatHistory}
+              className="text-sm text-red-600 hover:text-red-700 hover:underline flex items-center space-x-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>Clear History</span>
+            </button>
+          )}
+        </div>
         <div className="flex items-center space-x-4 mt-2">
           {loadingDocs ? (
             <p className="text-sm text-gray-500">Loading documents...</p>
