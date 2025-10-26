@@ -42,7 +42,7 @@ async def health_check():
     return {"status": "healthy"}
 
 
-# TODO: Add API routes here
+# NOTE: API routes will be added in Checkpoint 3 (Authentication)
 # from app.api.routes import auth, upload, chat
 # app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 # app.include_router(upload.router, prefix="/api/upload", tags=["upload"])

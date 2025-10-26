@@ -1,140 +1,103 @@
 # DocuMind AI - Checkpoint Status
 
 ## ✅ Checkpoint 1: COMPLETE ✅
-**Date Completed**: [Pending]
+**Date Completed**: [Committed to Git]
+**Status**: Committed
+
+## ✅ Checkpoint 2: COMPLETE ✅
+**Date Completed**: [Pending commit]
 **Status**: Ready for commit
 
 ### What was built:
 
-#### Server (FastAPI)
-- ✅ Project structure created (`app/`, `data/`, `tests/`)
-- ✅ FastAPI app initialized with CORS middleware
-- ✅ Configuration system with environment variables
-- ✅ Database models placeholders
-- ✅ API routes structure
-- ✅ Services, utils, middleware directories
-- ✅ Requirements.txt with all dependencies
-- ✅ Dockerfile configured
-- ✅ Data directory for uploads created
+#### Database Setup
+- ✅ Database connection setup (PostgreSQL with SQLAlchemy)
+- ✅ User model (id, email, username, password, timestamps)
+- ✅ Document model (id, user_id, filename, file_path, size, mime_type, vector_collection_id)
+- ✅ Alembic migrations configured
+- ✅ Database session dependency
 
-#### Client (React + TypeScript)
-- ✅ Project structure created (`src/`, `public/`)
-- ✅ Vite + React + TypeScript configured
-- ✅ Tailwind CSS setup
-- ✅ Redux Toolkit ready for implementation
-- ✅ Package.json with all dependencies
-- ✅ Dockerfile configured
-- ✅ Basic placeholder UI
+#### Qdrant Setup
+- ✅ Qdrant client configuration
+- ✅ Collection creation utility
+- ✅ Collection naming convention (user_{user_id}_documents)
 
-#### Infrastructure
-- ✅ Docker Compose configured (PostgreSQL, Qdrant, Redis)
-- ✅ Environment variable examples created
-- ✅ .gitignore configured
-- ✅ All necessary configuration files
+#### Pydantic Schemas
+- ✅ Auth schemas (UserSignup, UserLogin, Token, UserResponse)
+- ✅ Document schemas (DocumentUpload, DocumentResponse)
+- ✅ Chat schemas (ChatRequest, ChatResponse, ChatSource)
+
+#### API Structure
+- ✅ Routes directory structure created
+- ✅ Main app configured with CORS
+- ✅ Health check endpoints
 
 ### Files created:
 
 ```
 server/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py (FastAPI app with health check)
-│   ├── config.py (Settings)
-│   ├── api/ (Routes)
-│   ├── models/ (Database models)
-│   ├── schemas/ (Pydantic schemas)
-│   ├── services/ (Business logic)
-│   ├── utils/ (Utilities)
-│   └── middleware/ (Custom middleware)
-├── data/
-│   └── uploads/
-├── tests/
-├── Dockerfile
-├── requirements.txt
-├── pyproject.toml
-└── env.example
-
-client/
-├── src/
-│   ├── App.tsx (Placeholder UI)
-│   ├── main.tsx
-│   ├── index.css
-│   ├── components/
-│   ├── pages/
-│   ├── services/
-│   ├── store/
-│   ├── hooks/
-│   ├── types/
-│   └── utils/
-├── public/
-├── Dockerfile
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── tailwind.config.js
-└── env.example
-
-Root:
-├── docker-compose.yml
-├── .gitignore
-├── README.md
-├── CHECKPOINT.md
-├── CHECKPOINT_STATUS.md
-└── [Documentation files]
+│   ├── database.py (PostgreSQL connection)
+│   ├── models/
+│   │   ├── user.py
+│   │   ├── document.py
+│   │   └── __init__.py
+│   ├── schemas/
+│   │   ├── auth.py
+│   │   ├── document.py
+│   │   ├── chat.py
+│   │   └── __init__.py
+│   ├── utils/
+│   │   └── qdrant_client.py
+│   └── api/routes/
+│       └── __init__.py
+├── alembic/
+│   ├── env.py
+│   ├── script.py.mako
+│   └── versions/
+└── alembic.ini
 ```
 
 ### Next Steps:
 
-1. **Create .env files** (IMPORTANT):
+1. **Test Database Connection**:
    ```bash
-   # Backend .env
    cd server
-   cp env.example .env
-   # Edit .env and add your OpenAI API key!
-   cd ..
-   
-   # Frontend .env
-   cd client
-   cp env.example .env
-   cd ..
+   # Make sure postgres is running: docker-compose up postgres
+   # Run migration: alembic upgrade head
    ```
 
-2. **Test Docker setup**:
+2. **Test Server**:
    ```bash
-   # Start only infrastructure services
-   docker-compose up postgres qdrant redis
-   
-   # In separate terminal, test if services are up:
-   # PostgreSQL: Check if port 5432 is accessible
-   # Qdrant: http://localhost:6333/dashboard
-   # Redis: redis-cli ping
+   # Start infrastructure: docker-compose up postgres qdrant redis
+   # In another terminal: uvicorn app.main:app --reload
+   # Visit: http://localhost:8000/docs
    ```
 
-3. **Commit Checkpoint 1**:
+3. **Commit Checkpoint 2**:
    ```bash
    git add .
-   git commit -m "Checkpoint 1: Project Foundation & Infrastructure Setup"
-   git tag checkpoint-1
+   git commit -m "Checkpoint 2: Backend Foundation & Database Setup"
+   git tag checkpoint-2
    ```
 
 ---
 
-## ⏳ Checkpoint 2: Next (Backend Foundation & Database Setup)
+## ⏳ Checkpoint 3: Next (Authentication System)
 
 ### What needs to be built:
-- Database models (User, Document)
-- Database connection setup
-- Alembic migrations
-- Qdrant client configuration
-- Pydantic schemas for API
+- Password hashing with bcrypt
+- JWT token generation and validation
+- Authentication service
+- Auth routes (signup, signin, logout)
+- Auth middleware for protected routes
 
 See [CHECKPOINT.md](./CHECKPOINT.md) for full details.
 
 ---
 
 ## 📝 Notes:
-- The server .env file needs to be created manually (blocked by .gitignore)
-- The client .env file needs to be created manually (blocked by .gitignore)
-- Add your OpenAI API key to `server/.env` before running the backend
-- All services in docker-compose.yml are configured and ready to run
-
+- Database models are ready for migration
+- Qdrant client ready for vector operations
+- All schemas ready for API implementation
+- Server should start and connect to databases
