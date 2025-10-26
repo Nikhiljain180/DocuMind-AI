@@ -119,9 +119,10 @@ class DocumentService:
         db: Session,
         file: UploadFile,
         user_id: str
-    ) -> Document:
+    ) -> tuple[Document, str]:
         """
-        Handle complete document upload process
+        Handle document upload and queue processing
+        NOW ASYNC: Returns immediately, processes in background
         
         Args:
             db: Database session
@@ -129,47 +130,44 @@ class DocumentService:
             user_id: User ID
             
         Returns:
-            Created document record
+            Tuple of (Document record, task_id)
         """
+        from app.tasks.document_tasks import process_document_async
+        
         # Validate file
         DocumentService.validate_file(file)
         
         # Save file
         file_path, file_size = await DocumentService.save_file(file, user_id)
         
-        # Parse and chunk
-        chunks = DocumentService.parse_and_chunk_document(file_path)
-        
-        # Create document record
+        # Create document record with pending status
         document = Document(
             user_id=uuid.UUID(user_id),
             filename=file.filename,
             file_path=file_path,
             file_size=file_size,
-            mime_type=file.content_type
+            mime_type=file.content_type,
+            processing_status="pending"
         )
         
         db.add(document)
         db.commit()
         db.refresh(document)
         
-        # Generate embeddings and store in Qdrant
-        embeddings = generate_embeddings(chunks)
-        collection_name = QdrantService.create_user_collection(user_id)
-        QdrantService.store_document_embeddings(
+        # Queue async processing task
+        task = process_document_async.delay(
+            document_id=str(document.id),
             user_id=user_id,
-            document_id=document.id,
-            chunks=chunks,
-            embeddings=embeddings,
+            file_path=file_path,
             filename=file.filename
         )
         
-        # Update document with collection ID
-        document.vector_collection_id = collection_name
+        # Update document with task ID
+        document.task_id = task.id
         db.commit()
         db.refresh(document)
         
-        return document
+        return document, task.id
     
     @staticmethod
     def get_user_documents(db: Session, user_id: str) -> list[Document]:

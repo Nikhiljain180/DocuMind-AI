@@ -39,6 +39,10 @@ openpyxl==3.1.2  # For Excel/CSV files
 # HTTP Client (for testing)
 httpx==0.26.0
 
+# Redis & Async Task Queue
+redis==5.0.1
+celery==5.3.6
+
 # Development
 pytest==7.4.4
 pytest-asyncio==0.23.3

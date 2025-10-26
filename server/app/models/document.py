@@ -28,6 +28,11 @@ class Document(Base):
     # Qdrant collection for this document's embeddings
     vector_collection_id = Column(String(255), nullable=True)
     
+    # Processing status for async uploads
+    processing_status = Column(String(50), default="pending", nullable=False)  # pending, processing, completed, failed
+    processing_error = Column(String(512), nullable=True)
+    task_id = Column(String(255), nullable=True)  # Celery task ID
+    
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Relationship (optional, for future use)

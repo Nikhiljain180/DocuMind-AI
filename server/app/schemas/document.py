@@ -23,6 +23,9 @@ class DocumentResponse(BaseModel):
     file_size: int
     mime_type: Optional[str]
     vector_collection_id: Optional[str]
+    processing_status: str  # pending, processing, completed, failed
+    processing_error: Optional[str]
+    task_id: Optional[str]
     uploaded_at: datetime
     
     class Config:

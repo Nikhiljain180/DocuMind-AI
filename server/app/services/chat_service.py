@@ -1,14 +1,18 @@
 """
 Chat Service
 RAG (Retrieval-Augmented Generation) chat functionality
+WITH CHAT HISTORY SUPPORT
 """
 
 from typing import List, Optional
+from uuid import UUID, uuid4
+from sqlalchemy.orm import Session
 from openai import OpenAI
 
 from app.config import settings
 from app.utils.embeddings import generate_embedding
 from app.services.qdrant_service import QdrantService
+from app.models.chat_history import ChatHistory
 
 # Initialize OpenAI client
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -123,42 +127,93 @@ class ChatService:
     
     @staticmethod
     def chat(
+        db: Session,
         user_id: str,
         query: str,
         document_id: Optional[str] = None,
-        conversation_history: Optional[List[dict]] = None
+        conversation_id: Optional[str] = None
     ) -> dict:
         """
-        Complete RAG chat pipeline
+        Complete RAG chat pipeline WITH CHAT HISTORY
         
         Args:
+            db: Database session
             user_id: User ID
             query: User's question
             document_id: Optional document ID to search in
-            conversation_history: Optional previous messages
+            conversation_id: Optional conversation ID for grouping messages
             
         Returns:
-            Dict with answer and sources
+            Dict with answer, sources, and conversation_id
         """
-        # 1. Retrieve relevant chunks
-        chunks = ChatService.retrieve_relevant_chunks(
+        # Generate embedding for query
+        query_embedding = generate_embedding(query)
+        
+        # 1. Search both documents AND chat history
+        combined_results = QdrantService.search_combined(
             user_id=user_id,
-            query=query,
-            limit=5,
-            document_id=document_id
+            query_embedding=query_embedding,
+            limit=10,
+            document_weight=0.7,  # 70% weight to documents
+            chat_weight=0.3       # 30% weight to chat history
         )
         
-        # 2. Build context
-        context = ChatService.build_context(chunks)
+        document_chunks = combined_results["document_results"]
+        chat_chunks = combined_results["chat_results"]
         
-        # 3. Generate answer
+        # 2. Build context from documents
+        doc_context = ChatService.build_context(document_chunks)
+        
+        # 3. Build context from chat history
+        chat_context = ""
+        if chat_chunks:
+            chat_context = "\n\nPrevious conversation context:\n"
+            for i, chat in enumerate(chat_chunks, 1):
+                chat_context += f"[Previous conversation {i}]: {chat['text']}\n"
+        
+        # Combine contexts
+        full_context = doc_context + chat_context
+        
+        # 4. Generate answer
         answer = ChatService.generate_answer(
             query=query,
-            context=context,
-            conversation_history=conversation_history
+            context=full_context,
+            conversation_history=None  # Context already included above
         )
         
-        # 4. Format sources
+        # 5. Store this interaction in database and Qdrant
+        conv_id = UUID(conversation_id) if conversation_id else uuid4()
+        
+        # Create chat history record
+        chat_record = ChatHistory(
+            user_id=UUID(user_id),
+            user_message=query,
+            assistant_message=answer,
+            conversation_id=conv_id
+        )
+        
+        db.add(chat_record)
+        db.commit()
+        db.refresh(chat_record)
+        
+        # Generate embedding for this conversation
+        conversation_text = f"User: {query}\nAssistant: {answer}"
+        conversation_embedding = generate_embedding(conversation_text)
+        
+        # Store in Qdrant
+        vector_id = QdrantService.store_chat_history_embedding(
+            user_id=user_id,
+            chat_id=chat_record.id,
+            conversation_text=conversation_text,
+            embedding=conversation_embedding,
+            conversation_id=conv_id
+        )
+        
+        # Update chat record with vector ID
+        chat_record.vector_id = vector_id
+        db.commit()
+        
+        # 6. Format sources (only from documents, not chat history)
         sources = [
             {
                 "document_id": chunk["document_id"],
@@ -166,11 +221,13 @@ class ChatService:
                 "chunk_index": chunk["chunk_index"],
                 "relevance_score": chunk["similarity_score"]
             }
-            for chunk in chunks
+            for chunk in document_chunks
         ]
         
         return {
             "answer": answer,
-            "sources": sources
+            "sources": sources,
+            "conversation_id": str(conv_id),
+            "chat_context_used": len(chat_chunks) > 0
         }
 

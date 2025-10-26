@@ -57,9 +57,27 @@ class Settings(BaseSettings):
         """Convert ALLOWED_EXTENSIONS string to list"""
         return [ext.strip() for ext in self.ALLOWED_EXTENSIONS.split(",")]
     
-    # Redis (optional)
+    # Redis (for async tasks)
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
+    REDIS_PASSWORD: str = ""
+    
+    @property
+    def REDIS_URL(self) -> str:
+        """Build Redis URL for Celery"""
+        if self.REDIS_PASSWORD:
+            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+    
+    @property
+    def DATABASE_URL(self) -> str:
+        """Build PostgreSQL database URL"""
+        return f"postgresql+psycopg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+    
+    @property
+    def QDRANT_URL(self) -> str:
+        """Build Qdrant URL"""
+        return f"http://{self.QDRANT_HOST}:{self.QDRANT_PORT}"
     
     class Config:
         env_file = ".env"

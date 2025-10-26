@@ -26,4 +26,5 @@ class ChatResponse(BaseModel):
     answer: str
     sources: list[ChatSource]
     conversation_id: Optional[UUID] = None
+    chat_context_used: bool = False  # Whether previous conversations were used
 

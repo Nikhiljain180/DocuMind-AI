@@ -20,25 +20,27 @@ def chat(
     user_id: str = Depends(get_current_user_id)
 ):
     """
-    Chat with your documents using RAG
+    Chat with your documents using RAG + Chat History
     
-    Send a question and get an AI-powered answer based on your uploaded documents.
+    Send a question and get an AI-powered answer based on:
+    1. Your uploaded documents (70% weight)
+    2. Previous conversation context (30% weight)
+    
     The system will:
-    1. Find relevant chunks from your documents
+    1. Find relevant chunks from documents AND past conversations
     2. Use them as context for GPT
     3. Generate an accurate, context-aware answer
+    4. Store this conversation for future context
     
-    You can optionally filter by document_id to search in a specific document.
+    Provide conversation_id to maintain conversation continuity.
     """
     try:
-        # Get document_id from conversation_id if provided (future enhancement)
-        document_id = None  # Can be extracted from request if needed
-        
         result = ChatService.chat(
+            db=db,
             user_id=user_id,
             query=request.query,
-            document_id=document_id,
-            conversation_history=None  # Future: store conversation history
+            document_id=None,  # Can be added to request if needed
+            conversation_id=request.conversation_id
         )
         
         # Format response
@@ -55,7 +57,8 @@ def chat(
         return ChatResponse(
             answer=result["answer"],
             sources=sources,
-            conversation_id=request.conversation_id
+            conversation_id=result["conversation_id"],
+            chat_context_used=result.get("chat_context_used", False)
         )
     
     except ValueError as e:
