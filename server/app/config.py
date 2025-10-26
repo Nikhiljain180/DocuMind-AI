@@ -17,7 +17,12 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:5173"]
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+    
+    @property
+    def cors_origins_list(self) -> List[str]:
+        """Convert CORS_ORIGINS string to list"""
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
     
     # PostgreSQL
     POSTGRES_HOST: str = "localhost"
@@ -43,9 +48,14 @@ class Settings(BaseSettings):
     # File Upload
     UPLOAD_DIR: str = "./data/uploads"
     MAX_FILE_SIZE: int = 10485760  # 10MB
-    ALLOWED_EXTENSIONS: List[str] = [".pdf", ".txt", ".docx", ".md", ".csv"]
+    ALLOWED_EXTENSIONS: str = ".pdf,.txt,.docx,.md,.csv"
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
+    
+    @property
+    def allowed_extensions_list(self) -> List[str]:
+        """Convert ALLOWED_EXTENSIONS string to list"""
+        return [ext.strip() for ext in self.ALLOWED_EXTENSIONS.split(",")]
     
     # Redis (optional)
     REDIS_HOST: str = "localhost"
@@ -54,6 +64,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"  # Ignore extra fields in .env
 
 
 # Create global settings instance
