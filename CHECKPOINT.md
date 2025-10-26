@@ -178,14 +178,14 @@ server/app/utils/
 **When to commit**: After implementing complete RAG pipeline with chat endpoint.
 
 ### Checklist:
-- [ ] Chat service (`app/services/chat_service.py`)
-- [ ] RAG pipeline implementation (query → embedding → search → LLM)
-- [ ] OpenAI GPT integration
-- [ ] Context building from retrieved chunks
-- [ ] Chat endpoint (`POST /api/chat`)
-- [ ] Source attribution
-- [ ] Conversation management
-- [ ] Chat schemas
+- [x] Chat service (`app/services/chat_service.py`)
+- [x] RAG pipeline implementation (query → embedding → search → LLM)
+- [x] OpenAI GPT integration
+- [x] Context building from retrieved chunks
+- [x] Chat endpoint (`POST /api/chat`)
+- [x] Source attribution
+- [x] Conversation management
+- [x] Chat schemas
 
 **Files to include:**
 ```
