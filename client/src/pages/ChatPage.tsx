@@ -40,7 +40,7 @@ export const ChatPage: React.FC = () => {
       {
         id: uuidv4(),
         role: 'assistant',
-        content: 'Hello! I\'m your AI assistant. Upload some documents and ask me questions about them. I\'ll provide answers based on your documents with source citations.',
+        content: 'Hello! I\'m your AI assistant. Upload some documents and ask me questions about them. I\'ll provide answers based on your document content.',
         timestamp: new Date(),
       },
     ]);
@@ -63,7 +63,7 @@ export const ChatPage: React.FC = () => {
         conversation_id: null,
       });
 
-      // Add assistant message with sources
+      // Add assistant message
       const assistantMessage: ChatMessage = {
         id: uuidv4(),
         role: 'assistant',
