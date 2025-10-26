@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     # File Upload
     UPLOAD_DIR: str = "./data/uploads"
     MAX_FILE_SIZE: int = 10485760  # 10MB
-    ALLOWED_EXTENSIONS: str = ".pdf,.txt,.docx,.md,.csv"
+    ALLOWED_EXTENSIONS: str = ".pdf,.txt,.docx,.md,.csv,.json"
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
     

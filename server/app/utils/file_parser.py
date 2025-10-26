@@ -16,6 +16,9 @@ from docx import Document as DocxDocument
 # CSV parsing
 import csv
 
+# JSON parsing
+import json
+
 
 class FileParser:
     """Utility class for parsing different file formats"""
@@ -107,6 +110,50 @@ class FileParser:
             raise ValueError(f"Error parsing CSV: {str(e)}")
     
     @staticmethod
+    def parse_json(file_path: str) -> str:
+        """
+        Parse JSON file and convert to readable text
+        
+        Args:
+            file_path: Path to JSON file
+            
+        Returns:
+            JSON content as formatted text
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                
+            # Convert JSON to readable text
+            def json_to_text(obj, prefix=""):
+                """Recursively convert JSON to text"""
+                lines = []
+                
+                if isinstance(obj, dict):
+                    for key, value in obj.items():
+                        if isinstance(value, (dict, list)):
+                            lines.append(f"{prefix}{key}:")
+                            lines.extend(json_to_text(value, prefix + "  "))
+                        else:
+                            lines.append(f"{prefix}{key}: {value}")
+                elif isinstance(obj, list):
+                    for i, item in enumerate(obj):
+                        if isinstance(item, (dict, list)):
+                            lines.append(f"{prefix}Item {i+1}:")
+                            lines.extend(json_to_text(item, prefix + "  "))
+                        else:
+                            lines.append(f"{prefix}- {item}")
+                else:
+                    lines.append(f"{prefix}{obj}")
+                
+                return lines
+            
+            text_lines = json_to_text(data)
+            return "\n".join(text_lines).strip()
+        except Exception as e:
+            raise ValueError(f"Error parsing JSON: {str(e)}")
+    
+    @staticmethod
     def parse_file(file_path: str) -> str:
         """
         Auto-detect file type and parse accordingly
@@ -130,6 +177,8 @@ class FileParser:
             return FileParser.parse_txt(file_path)
         elif ext == '.csv':
             return FileParser.parse_csv(file_path)
+        elif ext == '.json':
+            return FileParser.parse_json(file_path)
         else:
             raise ValueError(f"Unsupported file type: {ext}")
 
