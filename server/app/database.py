@@ -8,9 +8,9 @@ from sqlalchemy.orm import sessionmaker
 
 from app.config import settings
 
-# PostgreSQL Database
+# PostgreSQL Database (using psycopg3)
 engine = create_engine(
-    f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}"
+    f"postgresql+psycopg://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}"
     f"@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}",
     pool_pre_ping=True,  # Verify connections before using them
     pool_size=10,
