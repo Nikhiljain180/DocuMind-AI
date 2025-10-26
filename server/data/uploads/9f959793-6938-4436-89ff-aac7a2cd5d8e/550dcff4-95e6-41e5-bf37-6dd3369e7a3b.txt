@@ -1,0 +1,11 @@
+Artificial Intelligence and Machine Learning
+
+Artificial intelligence (AI) is the simulation of human intelligence by machines. Machine learning is a subset of AI that enables systems to learn and improve from experience.
+
+Key concepts:
+- Neural Networks: Inspired by biological neurons
+- Deep Learning: Multi-layered neural networks
+- Natural Language Processing: Understanding human language
+- Computer Vision: Interpreting visual information
+
+Applications include autonomous vehicles, medical diagnosis, and recommendation systems.
