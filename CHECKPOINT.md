@@ -202,7 +202,7 @@ server/app/
 
 ---
 
-## ✅ Checkpoint 7: Frontend Foundation & Setup ✅
+## ✅ Checkpoint 7: Frontend Foundation & Setup
 
 **When to commit**: After creating React app structure, Tailwind setup, and basic UI framework.
 
@@ -266,7 +266,7 @@ client/src/
 
 ---
 
-## ✅ Checkpoint 9: Document Upload UI
+## ✅ Checkpoint 9: Document Upload UI - COMPLETE
 
 **When to commit**: After creating file upload component and connecting to backend upload API.
 
