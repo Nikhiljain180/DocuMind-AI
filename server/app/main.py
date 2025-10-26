@@ -43,13 +43,15 @@ async def health_check():
 
 
 # API Routes
-from app.api.routes import auth
+from app.api.routes import auth, upload
 
 # Authentication routes
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 
-# TODO: Add more routes in future checkpoints
-# from app.api.routes import upload, chat
-# app.include_router(upload.router, prefix="/api/upload", tags=["upload"])
+# Document upload routes
+app.include_router(upload.router, prefix="/api/upload", tags=["upload"])
+
+# TODO: Add chat routes in Checkpoint 5-6
+# from app.api.routes import chat
 # app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 
