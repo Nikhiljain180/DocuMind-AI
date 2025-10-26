@@ -154,24 +154,20 @@ class DocumentService:
         db.refresh(document)
         
         # Generate embeddings and store in Qdrant
-        try:
-            embeddings = generate_embeddings(chunks)
-            collection_name = QdrantService.create_user_collection(user_id)
-            QdrantService.store_document_embeddings(
-                user_id=user_id,
-                document_id=document.id,
-                chunks=chunks,
-                embeddings=embeddings,
-                filename=file.filename
-            )
-            
-            # Update document with collection ID
-            document.vector_collection_id = collection_name
-            db.commit()
-            db.refresh(document)
-        except Exception as e:
-            # If embedding fails, still return document but log error
-            print(f"Error generating embeddings: {e}")
+        embeddings = generate_embeddings(chunks)
+        collection_name = QdrantService.create_user_collection(user_id)
+        QdrantService.store_document_embeddings(
+            user_id=user_id,
+            document_id=document.id,
+            chunks=chunks,
+            embeddings=embeddings,
+            filename=file.filename
+        )
+        
+        # Update document with collection ID
+        document.vector_collection_id = collection_name
+        db.commit()
+        db.refresh(document)
         
         return document
     

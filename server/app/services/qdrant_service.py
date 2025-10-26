@@ -4,7 +4,7 @@ Handle vector database operations
 """
 
 from typing import List, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue
 
@@ -78,7 +78,7 @@ class QdrantService:
             points = []
             for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
                 point = PointStruct(
-                    id=f"{document_id}_{i}",  # Unique point ID
+                    id=str(uuid4()),  # Unique UUID for each chunk
                     vector=embedding,
                     payload={
                         "user_id": user_id,

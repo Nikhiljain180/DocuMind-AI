@@ -1,0 +1,1 @@
+DocuMind-AI is a powerful RAG application that allows users to upload documents and ask questions about them. The system uses FastAPI for the backend and React for the frontend. It integrates with OpenAI for embeddings and GPT responses, and uses Qdrant as a vector database for similarity search.
