@@ -84,6 +84,10 @@ coverage/
 *.tmp
 *.temp
 *.bak
+.env.bak
+*.env.bak
+.env.backup
+*.env.backup
 
 # OS
 .DS_Store

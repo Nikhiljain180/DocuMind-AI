@@ -1,234 +1,195 @@
 # DocuMind AI 🧠📄
 
-> **Status**: ✅ **PRODUCTION READY** - All Features Complete (Checkpoints 1-13) | **Next**: Deployment
+A full-stack AI-powered document Q&A system. Upload your documents and chat with them using AI - like ChatGPT, but for your own files!
 
-A powerful full-stack Retrieval-Augmented Generation (RAG) application built with React, TypeScript, FastAPI, and vector databases. Upload your documents and get intelligent AI-powered answers based on your content - like ChatGPT, but for your own documents!
+## ✨ What It Does
 
-## ✨ Features
+- **Upload documents** (PDF, DOCX, TXT, MD, CSV, JSON) and ask questions about them
+- **Smart AI responses** based on your document content
+- **Secure authentication** with your own account
+- **Chat history** that remembers your conversations
+- **Fast document processing** with background tasks
 
-### 🔐 User Authentication
-- Secure signup and signin with JWT tokens
-- Password hashing with bcrypt
-- Protected routes and API endpoints
-- Persistent authentication state
-- Clean logout functionality
-
-### 📤 Document Management
-- **Drag-and-drop** file upload with visual feedback
-- Support for multiple file formats: **PDF**, **DOCX**, **TXT**, **MD**, **CSV**
-- File size limit: up to 10MB per document
-- Real-time upload progress indicator
-- Document listing with metadata (filename, size, upload date)
-- Easy document deletion
-
-### 💬 Intelligent Chat Interface
-- ChatGPT-like conversational UI
-- Context-aware responses based on uploaded documents
-- **Chat history persistence** - messages saved across page refreshes
-- **Clear history button** - easily start fresh conversations
-- Multi-line input support (Shift + Enter for new line)
-- Auto-scrolling chat view
-- Document status indicator
-- Helpful tips and guidance
-
-### 🔍 Advanced RAG System
-- **Vector search** with Qdrant for semantic similarity
-- **Chunking strategy** for efficient document processing
-- **OpenAI embeddings** (text-embedding-3-small) for semantic search
-- **GPT-4o-mini** for intelligent response generation
-- Top-3 relevant chunks for context
-- Accurate answers based on document content
-
-## 🏗️ Architecture
-
-```
-Frontend (React + TypeScript)  →  Backend (FastAPI)  →  PostgreSQL (Auth)
-                                              ↓
-                                         Qdrant (Vector DB)
-                                              ↓
-                                         OpenAI (LLM + Embeddings)
-```
-
-## 📁 Project Structure
-
-```
-DocuMind-AI/
-├── client/          # React frontend (isolated)
-├── server/          # FastAPI backend (isolated)
-├── docker-compose.yml
-└── data/            # Uploaded documents
-```
-
-Both `client/` and `server/` are independent and can be used in separate projects.
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **React 18** with TypeScript
-- **Vite** - Lightning-fast build tool
-- **Tailwind CSS** - Utility-first styling
-- **Redux Toolkit** - State management
-- **React Router** - Client-side routing
-- **React Dropzone** - Drag-and-drop file uploads
-- **Axios** - HTTP client with interceptors
-- **React Hot Toast** - Beautiful notifications
-- **Zustand** (optional) - Lightweight state management
-- **pnpm** - Fast package manager
-
-### Backend
-- **FastAPI** - Modern Python web framework
-- **Python 3.12** - Latest stable version
-- **SQLAlchemy** - ORM for database operations
-- **Alembic** - Database migrations
-- **LangChain** - Document processing & RAG orchestration
-- **OpenAI API** - Embeddings & chat completions
-- **Qdrant Client** - Vector database operations
-- **PostgreSQL** - User data & document metadata
-- **Passlib + bcrypt** - Password hashing
-- **python-jose** - JWT token handling
-- **UV** - Fast Python package manager
-
-### Infrastructure
-- **Docker & Docker Compose** - Containerization
-- **PostgreSQL 15** - Relational database
-- **Qdrant** - Vector database for embeddings
-- **Redis** - Caching and async tasks (optional)
-
-## 📦 Installation
+## 🚀 Quick Setup (5 minutes)
 
 ### Prerequisites
-- **Node.js 18+** (use nvm to manage versions: `nvm use 20`)
-- **pnpm** - Fast package manager (`npm install -g pnpm`)
-- **Python 3.12** (use uv or pyenv for version management)
-- **UV** - Fast Python package manager ([Install UV](https://github.com/astral-sh/uv))
-- **Docker & Docker Compose** - For infrastructure services
-- **OpenAI API Key** - Get one from [OpenAI Platform](https://platform.openai.com/)
+- **Node.js 18+** ([Download](https://nodejs.org/))
+- **Python 3.12** ([Download](https://www.python.org/downloads/))
+- **Docker Desktop** ([Download](https://www.docker.com/products/docker-desktop))
+- **OpenAI API Key** ([Get one here](https://platform.openai.com/api-keys))
 
-### 🚀 Quick Start (5 minutes)
+### Step 1: Clone & Setup Environment
 
-#### 1. Clone the Repository
 ```bash
+# Clone the repository
 git clone https://github.com/your-username/DocuMind-AI.git
 cd DocuMind-AI
-```
 
-#### 2. Set Up Environment Variables
-
-**Backend (Required):**
-```bash
+# Setup backend environment
 cd server
 cp env.example .env
-# Edit .env and add your OpenAI API key:
-# OPENAI_API_KEY=sk-your-key-here
+# Edit .env and add your OpenAI API key
+
+# Setup frontend environment
+cd ../client
+cp env.example .env
 cd ..
 ```
 
-**Frontend (Already configured):**
+### Step 2: Start Database Services
+
 ```bash
-cd client
-cp env.example .env
-# Default: VITE_API_URL=http://localhost:8000
-cd ..
+# Start PostgreSQL, Qdrant, and Redis
+docker-compose up -d
 ```
 
-#### 3. Start Infrastructure Services
-```bash
-docker-compose up postgres qdrant redis -d
-```
+Wait 10 seconds for services to start.
 
-Wait ~10 seconds for services to initialize.
+### Step 3: Setup Backend
 
-#### 4. Set Up Backend
+**Terminal 1 - Backend Server:**
 ```bash
 cd server
 
-# Create virtual environment with Python 3.12
+# Install UV (fast Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create virtual environment
 uv venv --python 3.12
-
-# Activate virtual environment
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
 # Install dependencies
 uv pip install -r requirements.txt
 
-# Run database migrations
+# Setup database
 alembic upgrade head
 
-# Start the server
+# Start backend server
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Backend will run at: **http://localhost:8000**
+**Terminal 2 - Background Worker:**
+```bash
+cd server
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
-#### 5. Set Up Frontend (New Terminal)
+# Start Celery worker for async tasks
+celery -A app.celery_app worker --loglevel=info
+```
+
+Backend runs at: **http://localhost:8000**
+
+### Step 4: Setup Frontend
+
+**Terminal 3 - Frontend:**
 ```bash
 cd client
 
-# Ensure you're using Node.js 18+ (or 20+)
-nvm use 20  # If using nvm
+# Install pnpm (fast package manager)
+npm install -g pnpm
+
+# Use Node.js 20 (if using nvm)
+nvm use 20
 
 # Install dependencies
 pnpm install
 
-# Start the dev server
+# Start frontend
 pnpm dev
 ```
 
-Frontend will run at: **http://localhost:5173**
+Frontend runs at: **http://localhost:5173**
 
-#### 6. 🎉 Start Using the App!
-1. Open **http://localhost:5173** in your browser
-2. **Sign up** for a new account
-3. **Upload** some documents (PDF, DOCX, TXT, MD, CSV)
-4. Go to **Chat** and start asking questions about your documents!
+### Step 5: Use the App! 🎉
 
-### 📍 Access Points
-- **Frontend UI**: http://localhost:5173
-- **Backend API**: http://localhost:8000
-- **API Docs (Swagger)**: http://localhost:8000/docs
-- **Qdrant Dashboard**: http://localhost:6333/dashboard
-- **PostgreSQL**: localhost:5432 (user: `rag_user`, db: `rag_db`)
+1. Open **http://localhost:5173**
+2. **Sign up** for an account
+3. **Upload** documents
+4. **Chat** and ask questions!
 
-## 🔧 Development
+## 🔄 Restart Everything
 
-### Development Workflow
+Stop all servers with **Ctrl+C** in each terminal, then:
 
-The recommended development setup runs infrastructure in Docker while running backend and frontend locally for faster iteration and hot-reloading.
-
-**1. Start Infrastructure (in background):**
+**Restart databases:**
 ```bash
-docker-compose up postgres qdrant redis -d
+docker-compose restart
 ```
 
-**2. Start Backend (Terminal 1):**
+**Restart backend (Terminal 1):**
 ```bash
 cd server
-source .venv/bin/activate  # Activate your venv
+source .venv/bin/activate
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-**3. Start Frontend (Terminal 2):**
+**Restart worker (Terminal 2):**
+```bash
+cd server
+source .venv/bin/activate
+celery -A app.celery_app worker --loglevel=info
+```
+
+**Restart frontend (Terminal 3):**
 ```bash
 cd client
 pnpm dev
 ```
 
-### Useful Commands
+## 📚 Key Features
+
+### 🔐 Authentication
+- Secure signup/login with JWT tokens
+- Password encryption
+- Protected routes
+
+### 📤 Document Management
+- Drag-and-drop upload
+- Multiple file formats: PDF, DOCX, TXT, MD, CSV, JSON
+- Up to 10MB per file
+- View and delete documents
+
+### 💬 Smart Chat
+- ChatGPT-like interface
+- Context-aware AI responses
+- Chat history saved automatically
+- Multi-line input (Shift + Enter)
+
+### 🤖 AI Technology
+- OpenAI GPT-4o-mini for responses
+- Vector search with Qdrant
+- Smart document chunking
+- Async processing with Redis + Celery
+
+## 🏗️ Tech Stack
+
+**Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Redux Toolkit  
+**Backend:** FastAPI, Python 3.12, SQLAlchemy, LangChain  
+**Databases:** PostgreSQL (user data), Qdrant (vector search), Redis (tasks)  
+**AI:** OpenAI API (GPT-4o-mini, embeddings)
+
+## 📍 Access Points
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:8000 |
+| API Docs | http://localhost:8000/docs |
+| Qdrant Dashboard | http://localhost:6333/dashboard |
+| PostgreSQL | localhost:5432 |
+
+## 🔧 Development Commands
 
 **Backend:**
 ```bash
-# Create a new migration
-cd server
-alembic revision --autogenerate -m "Description"
+# Create database migration
+alembic revision --autogenerate -m "description"
 
 # Apply migrations
 alembic upgrade head
 
 # Rollback migration
 alembic downgrade -1
-
-# Check database connection
-python -c "from app.database import engine; print('Connected!' if engine else 'Failed')"
 ```
 
 **Frontend:**
@@ -248,223 +209,142 @@ pnpm tsc
 # Stop all services
 docker-compose down
 
-# Stop and remove volumes (fresh start)
+# Fresh start (removes data)
 docker-compose down -v
 
 # View logs
 docker-compose logs -f
 
-# Restart a specific service
+# Restart specific service
 docker-compose restart postgres
 ```
 
-## 🔑 Environment Variables
+## 🎯 Usage Tips
 
-### Server (.env)
-Key variables you need to configure:
+### Upload Documents
+1. Go to **Documents** page
+2. Drag files or click to browse
+3. Wait for "✅ Completed" status
+4. Check the green checkmark
 
-```env
-OPENAI_API_KEY=sk-your-key-here  # REQUIRED
-POSTGRES_HOST=postgres
-QDRANT_HOST=qdrant
-JWT_SECRET_KEY=generate-strong-secret
-```
+### Ask Questions
+1. Go to **Chat** page
+2. Type your question
+3. Press **Enter** to send
+4. Use **Shift + Enter** for new lines
 
-See `server/.env.example` for all options.
-
-### Client (.env)
-```env
-VITE_API_URL=http://localhost:8000
-```
-
-## 📚 Documentation
-
-- [Project Plan](./PROJECT_PLAN.md) - Detailed architecture and setup guide
-- [Architecture Guide](./ARCHITECTURE.md) - System architecture and design decisions
-- [Development Checkpoints](./CHECKPOINT.md) - Step-by-step development milestones
-- [Setup Guide](./SETUP_GUIDE.md) - GitHub upload and setup instructions
-- [Frontend README](./client/README.md) - Frontend-specific documentation
-- [Backend README](./server/README.md) - Backend-specific documentation
-
-## 🎯 Usage Guide
-
-### Step-by-Step Tutorial
-
-1. **Create an Account**
-   - Navigate to http://localhost:5173
-   - Click "Sign Up"
-   - Enter your email, username, and password
-   - You'll be automatically logged in
-
-2. **Upload Documents**
-   - Go to the "Documents" page
-   - Drag and drop files or click to select
-   - Supported formats: PDF, DOCX, TXT, MD, CSV
-   - Wait for upload to complete (shows progress)
-
-3. **Start Chatting**
-   - Navigate to the "Chat" page
-   - Type your question in the input box
-   - Press Enter to send (Shift + Enter for new line)
-   - The AI will answer based on your uploaded documents
-   - See source attributions showing which documents were used
-
-4. **Manage Documents**
-   - View all uploaded documents in the Documents page
-   - See file size and upload date
-   - Delete documents you no longer need
-
-### Example Questions to Try
-
-After uploading documents, try asking:
-- "What is the main topic of this document?"
-- "Summarize the key points"
-- "What does it say about [specific topic]?"
-- "Compare the information in these documents"
+### Example Questions
+- "What is this document about?"
+- "Summarize the main points"
+- "What does it say about [topic]?"
+- "Compare these documents"
 - "Find all mentions of [keyword]"
 
-## 🧪 Testing
+## 🐛 Common Issues
 
-### Manual Testing
-Follow the [Testing Guide](./TESTING_GUIDE.md) for comprehensive testing instructions.
-
-### Automated Tests (Coming Soon)
+### Port Already in Use
 ```bash
-# Backend tests
-cd server
-pytest
+# Kill process on port 8000
+lsof -ti:8000 | xargs kill -9
 
-# Frontend tests
+# Kill process on port 5173
+lsof -ti:5173 | xargs kill -9
+```
+
+### Database Connection Error
+```bash
+# Restart databases
+docker-compose down -v
+docker-compose up -d
+sleep 10
+cd server
+alembic upgrade head
+```
+
+### Python Package Issues
+```bash
+cd server
+source .venv/bin/activate
+uv pip install --upgrade -r requirements.txt
+```
+
+### Node.js Version Issues
+```bash
+# Install Node 20
+nvm install 20
+nvm use 20
+
+# Reinstall packages
 cd client
-pnpm test
+rm -rf node_modules
+pnpm install
+```
+
+### Missing OpenAI API Key
+Edit `server/.env` and add:
+```env
+OPENAI_API_KEY=sk-your-api-key-here
+```
+
+## 📖 Documentation
+
+- [Architecture Guide](./ARCHITECTURE.md) - System design and decisions
+- [Project Plan](./PROJECT_PLAN.md) - Detailed setup and structure
+- [Contributing Guide](./CONTRIBUTING.md) - How to contribute
+- [Backend README](./server/README.md) - Backend docs
+- [Frontend README](./client/README.md) - Frontend docs
+
+## 🚀 Production Deployment
+
+For production deployment using Aiven (PostgreSQL + Redis):
+
+1. **Create Services** on [Aiven](https://aiven.io)
+   - PostgreSQL service
+   - Redis service
+
+2. **Update Environment Variables:**
+```env
+# server/.env
+POSTGRES_HOST=your-aiven-postgres-host
+POSTGRES_PORT=your-aiven-postgres-port
+POSTGRES_DB=defaultdb
+POSTGRES_USER=avnadmin
+POSTGRES_PASSWORD=your-password
+
+REDIS_HOST=your-aiven-redis-host
+REDIS_PORT=your-redis-port
+REDIS_PASSWORD=your-redis-password
+```
+
+3. **Run Migrations:**
+```bash
+cd server
+source .venv/bin/activate
+alembic upgrade head
+```
+
+4. **Test Deployment:**
+```bash
+./scripts/test_deployment.sh
 ```
 
 ## 📝 License
 
 MIT License - see [LICENSE](./LICENSE) file for details.
 
----
-
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing`)
+5. Open a Pull Request
 
 ## 📧 Support
 
-For questions or issues, please open an issue on GitHub.
+- **Issues:** [GitHub Issues](https://github.com/your-username/DocuMind-AI/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/your-username/DocuMind-AI/discussions)
 
 ---
 
-**Built with ❤️ using React, FastAPI, and modern AI tools**
-
----
-
-## 🎯 Development Status
-
-### ✅ Completed (Checkpoints 1-13) - ALL FEATURES COMPLETE!
-
-**Core Application (Checkpoints 1-10):**
-- ✅ **Checkpoint 1**: Project Foundation & Infrastructure
-- ✅ **Checkpoint 2**: Backend Foundation & Database Setup
-- ✅ **Checkpoint 3**: Authentication System (JWT, bcrypt, endpoints)
-- ✅ **Checkpoint 4**: Document Upload & Processing (File handling, parsing)
-- ✅ **Checkpoint 5**: Vector Embeddings & Qdrant Integration
-- ✅ **Checkpoint 6**: RAG Chat System (Query, retrieval, response)
-- ✅ **Checkpoint 7**: Frontend Foundation & Setup (React, Router, Redux)
-- ✅ **Checkpoint 8**: Frontend Authentication UI (Login, Signup)
-- ✅ **Checkpoint 9**: Document Upload UI (Drag-and-drop, listing)
-- ✅ **Checkpoint 10**: Chat Interface UI (Messages, input)
-
-**Polish & Enhancements (Checkpoints 11-13):**
-- ✅ **Checkpoint 11**: Integration & UI Polish
-  - ✅ Chat history persistence with localStorage
-  - ✅ Clear history button with confirmation
-  - ✅ Source attribution removed for cleaner UI
-  - ✅ Error handling improvements
-
-- ✅ **Checkpoint 12**: Testing & Bug Fixes
-  - ✅ Manual testing complete
-  - ✅ Bug fixes applied
-  - ✅ Edge cases handled
-  - ✅ Performance optimization
-
-- ✅ **Checkpoint 13**: Final Polish & Documentation
-  - ✅ Comprehensive README with installation guide
-  - ✅ Troubleshooting section
-  - ✅ Usage examples and tips
-  - ✅ Code cleanup and organization
-
-### ⏳ Next: Checkpoint 14 - Deployment (PENDING)
-
-- [ ] Choose deployment platform (Railway, Vercel, AWS, etc.)
-- [ ] Configure production environment
-- [ ] Set up production databases (PostgreSQL, Qdrant, Redis)
-- [ ] Build and deploy frontend
-- [ ] Deploy backend API
-- [ ] Set up HTTPS/SSL
-- [ ] Configure monitoring and logging
-- [ ] Create deployment documentation
-
-See [CHECKPOINT.md](./CHECKPOINT.md) for detailed development roadmap and [CHECKPOINT_STATUS.md](./CHECKPOINT_STATUS.md) for current status.
-
----
-
-## 🚀 What's Working Right Now
-
-✅ **User authentication** with JWT tokens  
-✅ **Document upload** with drag-and-drop (PDF, DOCX, TXT, MD, CSV)  
-✅ **Document management** (list, view, delete)  
-✅ **Vector embeddings** with OpenAI (text-embedding-3-small)  
-✅ **Semantic search** with Qdrant vector database  
-✅ **RAG chat** with GPT-4o-mini  
-✅ **Chat history persistence** with localStorage (survives page refresh)  
-✅ **Clear chat history** button with confirmation  
-✅ **Beautiful UI** with Tailwind CSS and responsive design  
-✅ **Real-time updates** with hot module reloading  
-✅ **Error handling** and validation throughout  
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**1. `email-validator` ImportError**
-```bash
-cd server
-source .venv/bin/activate
-uv pip install email-validator==2.1.0
-```
-
-**2. Port 8000 already in use**
-```bash
-# Find and kill the process
-lsof -ti:8000 | xargs kill -9
-```
-
-**3. PostgreSQL connection errors**
-```bash
-# Restart services
-docker-compose down -v
-docker-compose up postgres qdrant redis -d
-```
-
-**4. Qdrant point ID format errors**
-- Fixed in the latest code (using UUID for point IDs)
-- Make sure you're using the latest version
-
-**5. Node.js version issues**
-```bash
-# Use Node.js 20+
-nvm install 20
-nvm use 20
-```
-
-### Need Help?
-
-- Check [CHECKPOINT_STATUS.md](./CHECKPOINT_STATUS.md) for known issues
-- Review [TESTING_GUIDE.md](./TESTING_GUIDE.md) for testing procedures
-- Open an issue on GitHub
+**Built with ❤️ using React, FastAPI, and OpenAI**
