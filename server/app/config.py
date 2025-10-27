@@ -64,10 +64,10 @@ class Settings(BaseSettings):
     
     @property
     def REDIS_URL(self) -> str:
-        """Build Redis URL for Celery"""
+        """Build Redis URL for Celery (uses rediss:// for SSL with Aiven)"""
         if self.REDIS_PASSWORD:
-            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+            return f"rediss://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0?ssl_cert_reqs=CERT_NONE"
+        return f"rediss://{self.REDIS_HOST}:{self.REDIS_PORT}/0?ssl_cert_reqs=CERT_NONE"
     
     @property
     def DATABASE_URL(self) -> str:
